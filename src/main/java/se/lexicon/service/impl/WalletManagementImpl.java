@@ -1,0 +1,35 @@
+package se.lexicon.service.impl;
+
+import se.lexicon.dao.WalletDao;
+import se.lexicon.exception.WalletNotFoundException;
+import se.lexicon.exception.WalletValidationException;
+import se.lexicon.model.Wallet;
+import se.lexicon.service.WalletManagement;
+
+import java.util.Optional;
+
+public class WalletManagementImpl implements WalletManagement {
+
+    private WalletDao walletDao;
+
+    public WalletManagementImpl(WalletDao walletDao) {
+        this.walletDao = walletDao;
+    }
+
+    @Override
+    public Wallet create(String walletName) {
+        if (walletName == null) throw new WalletValidationException("Parameter is not valid", "Wallet Name");
+        //todo add more logics: if the wallet name exists or not
+        Wallet wallet = new Wallet(walletName);
+        return walletDao.createWallet(wallet);
+    }
+
+    @Override
+    public Wallet getById(String id) {
+        Optional<Wallet> optionalWallet = walletDao.findWalletById(id);
+        if (optionalWallet.isPresent()) {
+            return optionalWallet.get();
+        }
+        throw new WalletNotFoundException("Wallet not found.");
+    }
+}
